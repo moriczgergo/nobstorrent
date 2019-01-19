@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>NoBSTorrent</title>
+    <link href="index.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://use.fontawesome.com;">
+  </head>
+  <body>
+    <!--<h1>Hello World!</h1>
+     All of the Node.js APIs are available in this renderer process.
+    <script></script> is using Node.js <script>document.write(process.versions.node)</script>,
+    Chromium <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>. -->
+
+    <!--<button id ="button">start</button>
+    <pre id="log" style="display:none;"></pre>
+    <p id="status"><i class="fas fa-spinner spinning" id="status-icon1"></i> <span id="status-text1"></span> <i class="fas fa-arrow-alt-circle-down" id="status-icon2"></i> <span id="status-text2"></span></p>-->
+
+    <p id="actions"><i id="addTorrent" class="fas fa-plus"></i></p>
+
+    <ul id="torrents">
+
+    </ul>
+
+    <div id="addModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <i class="close fas fa-times"></i>
+        Magnet link: <input type="text" id="addLink" placeholder="Magnet link" /><br>
+        or<br>
+        Torrent file: <input type="text" id="addFile" placeholder="Path to torrent file" /><br><br>
+
+        Path: <input type="text" id="addPath"><br><br>
+        <button id="addDone">Add</button>
+      </div>
+    </div>
+
+    <script>
+      // You can also require other files to run in this process
+      console.log("           _                    _        _   \n          ' )    )            /' `\\    /' `\\ \n          //   /'           /'     ) /'   ._)\n        /'/  /' ____      /' (___,/'(____    \n      /' / /' /'    )-- /'     )         )   \n    /'  //' /'    /'  /'      /'       /'    \n(,/'    (_,(___,/'(,/' (___,/'(_____,/'\n\nNoBSTorrent - An ad-free, no bullshit torrent client.\nNot made for illegal use. But we all know someone is going to use it for that.\n\nSomething doesn't work? Open up an issue at https://github.com/moriczgergo/nobstorrent/issues.\nJust curious? Fell free to look. More code on https://github.com/moriczgergo/nobstorrent.");
+      require('./renderer.js')
+    </script>
+  </body>
+</html>
