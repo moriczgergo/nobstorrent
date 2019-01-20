@@ -13,43 +13,31 @@ matrix:
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-
 cache:
   directories:
   - node_modules
   - "$HOME/.cache/electron"
   - "$HOME/.cache/electron-builder"
 script:
-- |
-  if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    sudo apt-get install software-properties-common
-    sudo apt-get install build-essential
-    dpkg --add-architecture i386
-    wget -nc https://dl.winehq.org/wine-builds/winehq.key
-    sudo apt-key add winehq.key
-    sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ trusty main'
-    sudo apt-get update
-    sudo apt-get install --install-recommends winehq-stable
-    sudo apt-get install --no-install-recommends -y libopenjp2-tools
-    sudo apt-get install --no-install-recommends -y rpm
-    sudo apt-get install --no-install-recommends -y bsdtar
-    sudo apt-get install --no-install-recommends -y snapcraft
-    
-    npx electron-builder -w
-    npx electron-builder -l
-  else
-    npx electron-builder -m
-  fi
-  ls dist/
+- "if [ \"$TRAVIS_OS_NAME\" == \"linux\" ]; then\n  sudo apt-get install software-properties-common\n
+  \ sudo apt-get install build-essential\n  dpkg --add-architecture i386\n  wget -nc
+  https://dl.winehq.org/wine-builds/winehq.key\n  sudo apt-key add winehq.key\n  sudo
+  apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ trusty main'\n
+  \ sudo apt-get update\n  sudo apt-get install --install-recommends winehq-stable\n
+  \ sudo apt-get install --no-install-recommends -y libopenjp2-tools\n  sudo apt-get
+  install --no-install-recommends -y rpm\n  sudo apt-get install --no-install-recommends
+  -y bsdtar\n  sudo apt-get install --no-install-recommends -y snapcraft\n  \n  npx
+  electron-builder -w\n  npx electron-builder -l\nelse\n  npx electron-builder -m\nfi\nls
+  dist/\n"
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 
 deploy:
   provider: releases
   file_glob: true
-  file:
-    - "nobstorrent Setup *.exe"
-    - "nobstorrent-*.dmg"
+  api_key:
+    secure: HmQMTaCrkm3v3ZGr4wbnhzXsx3qfHXWca/VN2cYkuYR1ThmGO9aVlWQBpR0WNNueMVUbpRZxpPVq0o05+v43FuqTiOI0fu+kV2u9j5y+CNgtMt9qzNyiWd/hIPyUXRiCN71Osyr3589HFEr7g0vGvyGJvNDRD1AQW5uNvIUuX5TF9ZLI8rKzAC2iVWptOBN1CjKB57umUmanP51EA/bWUQ/pHeDq9jxfe3ZzGvikg8GdES5VMbUrR/jobxl9FTaIA+WFt9QHXd1TGitwEFpg/gU1AjuRnPm4pIr/uElPUCEyGBb748tj1Zc4q6RWxDMsQ7SFF62TlqcWymlR1riOuW4TN9cxQz1dnvXxPJDfRjfWXfyC/pcU5vpmdTAqI8xVs04cGsvAyEangCPFIdhDGP8JhO17OlQDQSbosK80B/yJxWtjOBzO9PA4SPgqgRkI6cvtzYTG61ithPexThBBdR8eQ+xhOgjaNV4ZFZU20sjBkvADMIorFqH4Ppf38bBz6/0oI2pyKQ4H1uy6HLFJx3I2ldtELyeuBKHOoYqo5T9CqAVWJbAHIyjwDmt2rjJeCtk/Tgd270bBZO1Lax9RW50gMjYse1n0gEUrKjHzyFXN51G2TA5V2bEimeCqH7T4pxzmcAeFVtpTpM4beN13XPakZabisyAs5WZyil+93Dk=
+  file: dist/*
   skip_cleanup: true
   on:
     tags: true
