@@ -1,9 +1,25 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, Menu, MenuItem} = require('electron')
+const isDev = require('electron-is-dev');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+      if (commandLine[1]) mainWindow.webContents.send("addTorrent", commandLine[1], "link");
+    }
+  })
+}
 
 function createWindow () {
   // Create the browser window.
@@ -11,6 +27,8 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+
+  if (!isDev) app.setAsDefaultProtocolClient("magnet");
 
   var menu = new Menu();
   menu.append(new MenuItem({ label: 'DevTools', click() { mainWindow.webContents.openDevTools() } }));

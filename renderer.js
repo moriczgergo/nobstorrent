@@ -4,16 +4,21 @@
 
 var fs = require('fs');
 var path = require('path');
+var ipc = require('electron').ipcRenderer;
+
+var basepath = path.dirname(require('electron').remote.app.getAppPath());
 
 var WebTorrent = require('webtorrent');
 var client = new WebTorrent();
 
-var syncToDrive=()=>fs.writeFileSync("./data.json", JSON.stringify(data), 'utf8');
-var readFromDrive=()=>JSON.parse(fs.readFileSync('./data.json','utf8'));
-var createData=()=>fs.existsSync('./data.json') ? false : fs.writeFileSync("./data.json", JSON.stringify({warning: "Editing this file could mess up nobstorrent. So, please don't! If you do, just delete this file.", path: __dirname, torrents:[]}), "utf8");
+var syncToDrive=()=>fs.writeFileSync(path.join(basepath, 'data.json'), JSON.stringify(data), 'utf8');
+var readFromDrive=()=>JSON.parse(fs.readFileSync(path.join(basepath, 'data.json'),'utf8'));
+var createData=()=>fs.existsSync(path.join(basepath, 'data.json')) ? false : fs.writeFileSync(path.join(basepath, 'data.json'), JSON.stringify({warning: "Editing this file could mess up nobstorrent. So, please don't! If you do, just delete this file.", path: __dirname, torrents:[]}), "utf8");
 
 var log = x=>console.log(x);
 var bytesToSize = (a,b)=>{if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["B","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
+
+console.log(process.argv);
 
 function torrentHandler(id) {
     return torrent => {
@@ -197,84 +202,26 @@ addBtn.onclick = function() {
     log (src);
 
     var path = document.getElementById("addPath").value;
-    if (path != "") {
-        data.dir = path;
+    if (path != data.path) {
+        data.path = path;
         syncToDrive();
     }
 
-    var i = createTorrent(src, data.dir)-1;
+    var i = createTorrent(src, data.path)-1;
     var t = data.torrents[i];
     addTorrentVis(t, i);
     addTorrent(t.data, t.path, i);
     addModal.style.display = "none";
+
+    document.getElementById("addFile").value = "";
+    document.getElementById("addLink").value = "";
 }
 
 document.getElementById("addPath").value = data.path;
 
-/*document.getElementById("example").onclick = function() {
-    var i = createTorrent('magnet:?xt=urn:btih:57537d93a76f574369dc2e573e99c3840a9fd89d&dn=Hunter.Killer.2018.1080p.WEBRip.x264-MP4&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969', './')-1;
-    var t = data.torrents[i];
-    addTorrentVis(t, i);
-    addTorrent(t.data, t.path, i);
-}*/
-
-/*var torrentId = 'magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent';
-
-var elements = {
-    logBox: document.getElementById('log'),
-    button: document.getElementById('button'),
-    status: {
-        icon1: document.getElementById('status-icon1'),
-        text1: document.getElementById('status-text1'),
-        icon2: document.getElementById('status-icon2'),
-        text2: document.getElementById('status-text2')
-    }
-};
-
-var log = x=>{console.log(x);elements.logBox.innerText+=x+"\n";}
-
-function torrentHandler(torrent) {
-    var status = "";
-    torrent.on('download', function () {
-        if (status != "downloading") {status = "downloading";log(status)}
-
-        if (elements.status.icon1.className != "fas fa-spinner spinning") elements.status.icon1.className = "fas fa-spinner spinning";
-        if (elements.status.icon2.className != "fas fa-arrow-alt-circle-down") elements.status.icon2.className = "fas fa-arrow-alt-circle-down";
-
-        var percent = Math.floor(torrent.progress*100) + "%";
-        var speed = bytesToSize(torrent.downloadSpeed) + "/s"
-
-        elements.status.text1.innerText = percent;
-        elements.status.text2.innerText = speed;
-        //elements.status.innerHTML = '<i class="fas fa-spinner spinning"></i> ' + percent + ' <i class="fas fa-arrow-alt-circle-down"></i> ' + speed;
-    })
-    torrent.on('upload', function () {
-        if (status != "uploading") {status = "uploading";log(status)}
-
-        if (elements.status.icon1.className != "fas fa-seedling") elements.status.icon1.className = "fas fa-seedling";
-        if (elements.status.icon2.className != "fas fa-arrow-alt-circle-up") elements.status.icon2.className = "fas fa-arrow-alt-circle-up";
-
-        log("seeding");
-
-        var speed = bytesToSize(torrent.uploadSpeed) + "/s";
-        elements.status.text2.innerText = speed;
-        elements.status.text1.innerText = bytesToSize(torrent.uploaded);
-    })
-    torrent.on('done', function() {
-        log("done!")
-        if (elements.status.icon1.className != "fas fa-seedling") elements.status.icon1.className = "fas fa-seedling";
-        if (elements.status.icon2.className != "fas fa-arrow-alt-circle-up") elements.status.icon2.className = "fas fa-arrow-alt-circle-up";
-
-        elements.status.text1.innerText = bytesToSize(torrent.uploaded);
-        elements.status.text2.innerText = "0B/s";
-
-        client.seed(torrent.path, torrentHandler);
-    });
-}
-
-client.on('error',x=>log.innerText+=x);
-
-elements.button.onclick = function() {
-    log("Started.\n");
-    client.add(torrentId, {path: "D:\\Projects\\nobstorrent\\"}, torrentHandler);
-}*/
+ipc.on("addTorrent", function(event, arg, type) {
+    console.log("addTorrent " + arg + " " + type);
+    if (!arg.startsWith("magnet:")) return;
+    if (type=="link") document.getElementById("addLink").value = arg;
+    addModal.style.display = "block";
+})

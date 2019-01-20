@@ -4,7 +4,9 @@
   "description": "An ad-free, no-bullshit torrent client.",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "release": "electron-builder"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -14,9 +16,17 @@
   "author": "skiilaa",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^4.0.1"
+    "electron": "^4.0.1",
+    "electron-builder": "^20.38.5"
   },
   "dependencies": {
+    "electron-is-dev": "^1.0.1",
     "webtorrent": "^0.103.0"
+  },
+  "build": {
+    "appId": "me.skiilaa.nobstorrent",
+    "mac": {
+      "category": "public.app-category.productivity"
+    }
   }
 }
