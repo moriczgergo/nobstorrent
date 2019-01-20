@@ -27,6 +27,9 @@
     "appId": "me.skiilaa.nobstorrent",
     "mac": {
       "category": "public.app-category.productivity"
+    },
+    "linux" : {
+      "target": [{"target": "snap"}, {"target": "AppImage"}, {"target": "deb"}, {"target": "rpm"}, {"target": "pacman"}, {"target": "tar.gz"}]
     }
   }
 }

@@ -24,11 +24,22 @@ script:
   npm i
   npm i -D
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    npm run release -w
-    npm run release -l
+    npx electron-builder -w
+    npx electron-builder -l
   else
-    npm run release -m
+    npx electron-builder -m
   fi
   ls dist/
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
+
+deploy:
+  provider: releases
+  file_glob: true
+  file:
+    - "nobstorrent Setup *.exe"
+    - "nobstorrent-*.dmg"
+    - ""
+  skip_cleanup: true
+  on:
+    tags: true
