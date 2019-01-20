@@ -8,8 +8,12 @@ matrix:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
   - os: linux
-    services: docker
-    language: generic
+    language: node_js
+    node_js: '10'
+    env:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+
 cache:
   directories:
   - node_modules
@@ -20,19 +24,11 @@ script:
   npm i
   npm i -D
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    npm run release -wl
+    npm run release -w
+    npm run release -l
   else
     npm run release -m
   fi
   ls dist/
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
-
-deploy:
-  provider: releases
-  api_key:
-    secure: hYcHKK4crR96czikSZo+OTUgduDmoOyXlNtg6Gt/xT3AZca4+ryV7ic97st40iMaLjvStRdM5G0PV3aFl+mI58Alv2viyybxK6OYijapL+GqQLJIwIGe6zNTXLqFjLuoIq6cMN8f6evN/Pn/ELnCZIYNfjaQefsUOWCA+M92tC/DKInDjAHhk4N5n+QcAV/c3crsSjEzOdu03mgoK1VEq+Yq6R/nOz3N7TYG/eCbkGNkWkgIgoRCmUukGr+YFLo42+s/2rWQH4oca9B6FT4ERTIvMBwnBFHdO3neoHtON5cZ2/+ncHF4+lmjDLk8hrGUJM4pw43yc5GeysHqIXSQPMqvZF9WnBN1jONDsOFlgMvM246U5xm79YZNWYIyovXrvUUEyFnUEnQfXal7KY6y86keRhallqXOdkaPjBFA+0FGn5qx5oNkXiyqlkHnrrt/UPjXJvgqef9CyLqXDLWEHXe9bsV828GueKRA47qGTl46njeKsMVrVe96jKzrE5tIDKUL989J2jtYoNte9Z1yPAJnFRcoekKf0FnaH+U0tM+z6xeE9CSb1Y95s0Jgyf8SLP9kBa1CViwrS2HsBWRl2nM7EzMcT88eWMcVCWpoNm2IAR2xYHpKDG9f+uyai8lOl8bS8BtQyFmOzbHfgL3VJgO9+uumFWzvy948cvDVD28=
-  file: nobstorrent*.*
-  on:
-    repo: moriczgergo/nobstorrent
-    tags: true
